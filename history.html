@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthchievements — Adventure History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Health<span>chievements</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">🏠 Home Base</a></li>
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="log.html">📝 Quest Log</a></li>
+            <li><a href="history.html">📜 History</a></li>
+            <li><a href="tips.html">💡 Power-Ups</a></li>
+            <li><a href="profile.html">👤 Profile</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>📜 Adventure History</h1>
+        <p>Look back at all your completed quests and see how far you've come!</p>
+    </div>
+
+    <div class="history-container" id="historyContent"></div>
+
+    <footer>
+        <p>⚔️ Healthchievements © 2026 ⚔️</p>
+        <p style="margin-top: 8px;">
+            <a href="index.html">Home Base</a> •
+            <a href="log.html">Quest Log</a> •
+            <a href="dashboard.html">Dashboard</a>
+        </p>
+    </footer>
+
+    <!-- Page-specific JavaScript for history display -->
+    <script>
+        function loadHistory() {
+            var container = document.getElementById('historyContent');
+            var data = localStorage.getItem('healthQuestLog');
+            var questLog = data ? JSON.parse(data) : [];
+
+            if (questLog.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div style="font-size: 50px; margin-bottom: 15px;">📜</div><h2>No Adventures Recorded Yet!</h2><p style="color: var(--text-muted);">Complete your first quest to see your history here.</p><a href="log.html">📝 Start First Quest</a></div>';
+                return;
+            }
+
+            var html = '<div class="controls"><div class="info">📜 ' + questLog.length + ' quest(s) completed</div><button class="btn-clear" onclick="clearAllHistory()">🗑️ Clear All Quests</button></div>';
+
+            for (var i = questLog.length - 1; i >= 0; i--) {
+                var entry = questLog[i];
+                html += '<div class="history-entry">';
+                html += '<div class="entry-header"><div><div class="entry-date">🗓️ ' + (entry.date || 'No date') + '</div><div class="entry-name">🎮 ' + (entry.playerName || 'Unknown Hero') + '</div></div>';
+                html += '<div style="display: flex; gap: 10px; align-items: center;"><span class="entry-xp">+' + (entry.xpEarned || 50) + ' XP</span><button class="btn-delete-entry" onclick="deleteEntry(' + i + ')">✕ Delete</button></div></div>';
+
+                html += '<div class="entry-stats">';
+                if (entry.height) html += '<div class="entry-stat"><div class="entry-stat-label">📐 Height</div><div class="entry-stat-value">' + entry.height + ' cm</div></div>';
+                if (entry.weight) html += '<div class="entry-stat"><div class="entry-stat-label">⚖️ Weight</div><div class="entry-stat-value">' + entry.weight + ' kg</div></div>';
+                if (entry.bmi && entry.bmi !== '--') html += '<div class="entry-stat"><div class="entry-stat-label">⚡ BMI</div><div class="entry-stat-value">' + entry.bmi + '</div></div>';
+                if (entry.heartRate) html += '<div class="entry-stat"><div class="entry-stat-label">💓 Heart Rate</div><div class="entry-stat-value">' + entry.heartRate + ' bpm</div></div>';
+                if (entry.sleepHours) html += '<div class="entry-stat"><div class="entry-stat-label">😴 Sleep</div><div class="entry-stat-value">' + entry.sleepHours + ' hrs</div></div>';
+                if (entry.sleepQuality) {
+                    var stars = '⭐'.repeat(parseInt(entry.sleepQuality));
+                    html += '<div class="entry-stat"><div class="entry-stat-label">⭐ Sleep Quality</div><div class="entry-stat-value" style="font-size: 14px;">' + stars + '</div></div>';
+                }
+                html += '</div>';
+
+                if (entry.cycleTracking && entry.cycleStart) {
+                    html += '<div class="cycle-info">🌸 <span>Cycle Tracking:</span> Start: ' + entry.cycleStart;
+                    if (entry.cycleLength) html += ' | Length: ' + entry.cycleLength + ' days';
+                    if (entry.cycleFlow) html += ' | Flow: ' + entry.cycleFlow;
+                    if (entry.cycleNotes) html += '<br>📝 Notes: ' + entry.cycleNotes;
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        function deleteEntry(index) {
+            if (confirm('⚠️ Delete this quest entry? This cannot be undone!')) {
+                var data = localStorage.getItem('healthQuestLog');
+                var questLog = data ? JSON.parse(data) : [];
+                questLog.splice(index, 1);
+                localStorage.setItem('healthQuestLog', JSON.stringify(questLog));
+                loadHistory();
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm('⚠️ DANGER! Delete ALL quest history? This cannot be undone!')) {
+                localStorage.removeItem('healthQuestLog');
+                localStorage.removeItem('totalXP');
+                loadHistory();
+            }
+        }
+
+        loadHistory();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthchievements — Player Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Health<span>chievements</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">🏠 Home Base</a></li>
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="log.html">📝 Quest Log</a></li>
+            <li><a href="history.html">📜 History</a></li>
+            <li><a href="tips.html">💡 Power-Ups</a></li>
+            <li><a href="profile.html">👤 Profile</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>📊 Player Dashboard</h1>
+        <p>Your health stats at a glance — check your character sheet, adventurer!</p>
+    </div>
+
+    <div class="dashboard" id="dashboardContent"></div>
+
+    <footer>
+        <p>⚔️ Healthchievements © 2026 ⚔️</p>
+        <p style="margin-top: 8px;">
+            <a href="index.html">Home Base</a> •
+            <a href="log.html">Quest Log</a> •
+            <a href="history.html">History</a>
+        </p>
+    </footer>
+
+    <!-- Page-specific JavaScript for dashboard data display -->
+    <script>
+        function loadDashboard() {
+            var container = document.getElementById('dashboardContent');
+            var data = localStorage.getItem('healthQuestLog');
+            var questLog = data ? JSON.parse(data) : [];
+
+            if (questLog.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div style="font-size: 50px; margin-bottom: 15px;">🗡️</div><h2>No Quests Completed Yet!</h2><p style="color: var(--text-muted);">Start your first health quest to see your stats here.</p><a href="log.html">📝 Start First Quest</a></div>';
+                return;
+            }
+
+            var latest = questLog[questLog.length - 1];
+            var totalXP = parseInt(localStorage.getItem('totalXP')) || 0;
+            var level = Math.floor(totalXP / 200) + 1;
+            var xpInCurrentLevel = totalXP % 200;
+            var xpPercent = (xpInCurrentLevel / 200) * 100;
+
+            var totalSleep = 0, sleepCount = 0, totalHR = 0, hrCount = 0;
+            for (var i = 0; i < questLog.length; i++) {
+                if (questLog[i].sleepHours) { totalSleep += parseFloat(questLog[i].sleepHours); sleepCount++; }
+                if (questLog[i].heartRate) { totalHR += parseFloat(questLog[i].heartRate); hrCount++; }
+            }
+            var avgSleep = sleepCount > 0 ? (totalSleep / sleepCount).toFixed(1) : '--';
+            var avgHR = hrCount > 0 ? Math.round(totalHR / hrCount) : '--';
+
+            var sleepPercent = avgSleep !== '--' ? Math.min((avgSleep / 8) * 100, 100) : 0;
+            var bmiPercent = 0;
+            if (latest.bmi && latest.bmi !== '--') {
+                var bmiScore = Math.max(0, 100 - Math.abs(parseFloat(latest.bmi) - 22) * 5);
+                bmiPercent = Math.min(bmiScore, 100);
+            }
+            var hrPercent = 0;
+            if (avgHR !== '--') {
+                if (avgHR >= 60 && avgHR <= 100) hrPercent = 90;
+                else if (avgHR >= 50 && avgHR <= 110) hrPercent = 70;
+                else hrPercent = 40;
+            }
+
+            var badges = [
+                { icon: '🎮', name: 'First Quest', unlocked: questLog.length >= 1 },
+                { icon: '📊', name: '5 Entries', unlocked: questLog.length >= 5 },
+                { icon: '🏆', name: '10 Entries', unlocked: questLog.length >= 10 },
+                { icon: '😴', name: 'Sleep Master', unlocked: avgSleep !== '--' && avgSleep >= 7 },
+                { icon: '💓', name: 'Healthy Heart', unlocked: avgHR !== '--' && avgHR >= 60 && avgHR <= 100 },
+                { icon: '⚖️', name: 'BMI Balance', unlocked: latest.bmi && parseFloat(latest.bmi) >= 18.5 && parseFloat(latest.bmi) < 25 },
+                { icon: '⭐', name: 'Level 5', unlocked: level >= 5 },
+                { icon: '👑', name: 'Level 10', unlocked: level >= 10 },
+            ];
+
+            var html = '';
+            html += '<div class="player-card"><div class="player-avatar">⚔️</div><div class="player-info"><h2>' + (latest.playerName || 'Adventurer') + '</h2><div class="player-level">⭐ Level ' + level + ' Adventurer</div><div class="player-xp-bar"><div class="player-xp-fill" style="width: ' + xpPercent + '%;"></div></div><div class="player-xp-text">' + xpInCurrentLevel + ' / 200 XP to next level (Total: ' + totalXP + ' XP)</div></div></div>';
+
+            html += '<div class="stats-grid">';
+            html += '<div class="stat-card"><div class="stat-icon">📝</div><div class="stat-label">Quests Done</div><div class="stat-value">' + questLog.length + '</div><div class="stat-sub">Total entries logged</div></div>';
+            html += '<div class="stat-card"><div class="stat-icon">⚖️</div><div class="stat-label">Latest BMI</div><div class="stat-value">' + (latest.bmi || '--') + '</div><div class="stat-sub">Power Level</div></div>';
+            html += '<div class="stat-card"><div class="stat-icon">💓</div><div class="stat-label">Avg Heart Rate</div><div class="stat-value">' + avgHR + '</div><div class="stat-sub">' + (avgHR !== '--' ? 'bpm' : 'No data') + '</div></div>';
+            html += '<div class="stat-card"><div class="stat-icon">😴</div><div class="stat-label">Avg Sleep</div><div class="stat-value">' + avgSleep + '</div><div class="stat-sub">' + (avgSleep !== '--' ? 'hours / night' : 'No data') + '</div></div>';
+            html += '</div>';
+
+            html += '<div class="progress-section"><h2>📈 Health Power Bars</h2>';
+            html += '<div class="progress-item"><div class="progress-header"><span>😴 Sleep Score</span><span>' + (avgSleep !== '--' ? avgSleep + '/8 hrs' : 'No data') + '</span></div><div class="progress-bar"><div class="progress-fill fill-sleep" style="width: ' + sleepPercent + '%;"></div></div></div>';
+            html += '<div class="progress-item"><div class="progress-header"><span>⚖️ BMI Score</span><span>' + (latest.bmi || 'No data') + '</span></div><div class="progress-bar"><div class="progress-fill fill-bmi" style="width: ' + bmiPercent + '%;"></div></div></div>';
+            html += '<div class="progress-item"><div class="progress-header"><span>💓 Heart Rate Score</span><span>' + (avgHR !== '--' ? avgHR + ' bpm' : 'No data') + '</span></div><div class="progress-bar"><div class="progress-fill fill-heart" style="width: ' + hrPercent + '%;"></div></div></div>';
+            html += '</div>';
+
+            html += '<div class="achievements"><h2>🏆 Achievement Badges</h2><div class="badge-grid">';
+            for (var b = 0; b < badges.length; b++) {
+                html += '<div class="badge-item ' + (badges[b].unlocked ? 'unlocked' : 'locked') + '"><div class="badge-icon">' + badges[b].icon + '</div><div class="badge-name">' + badges[b].name + '</div></div>';
+            }
+            html += '</div></div>';
+            container.innerHTML = html;
+        }
+        loadDashboard();
+    </script>
+
+</body>
+</html>

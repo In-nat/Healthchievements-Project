@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthchievements — Hero Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Health<span>chievements</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">🏠 Home Base</a></li>
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="log.html">📝 Quest Log</a></li>
+            <li><a href="history.html">📜 History</a></li>
+            <li><a href="tips.html">💡 Power-Ups</a></li>
+            <li><a href="profile.html">👤 Profile</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>👤 Hero Profile</h1>
+        <p>Customise your character sheet, set goals, and manage your account!</p>
+    </div>
+
+    <div class="profile-container">
+
+        <div class="hero-card" id="heroCard">
+            <div class="avatar-large" id="displayAvatar">⚔️</div>
+            <div class="hero-name" id="displayName">Adventurer</div>
+            <div class="hero-title" id="displayTitle">⭐ Level 1 — Novice Hero</div>
+            <div class="hero-stats-row">
+                <div class="mini-stat"><div class="mini-stat-value" id="displayXP">0</div><div class="mini-stat-label">Total XP</div></div>
+                <div class="mini-stat"><div class="mini-stat-value" id="displayQuests">0</div><div class="mini-stat-label">Quests Done</div></div>
+                <div class="mini-stat"><div class="mini-stat-value" id="displayLevel">1</div><div class="mini-stat-label">Level</div></div>
+            </div>
+        </div>
+
+        <div class="save-notification" id="saveNotification">✅ Profile saved successfully! +10 XP earned!</div>
+
+        <div class="profile-section">
+            <h2>🎨 Customise Your Hero</h2>
+            <div class="field-group">
+                <label>🖼️ Choose Your Avatar</label>
+                <div class="avatar-picker" id="avatarPicker"></div>
+            </div>
+            <div class="field-group">
+                <label for="profileName">🎮 Hero Name</label>
+                <input type="text" id="profileName" placeholder="Enter your hero name...">
+            </div>
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="profileAge">🎂 Age</label>
+                    <input type="number" id="profileAge" placeholder="e.g. 25" min="1" max="150">
+                </div>
+                <div class="field-group">
+                    <label for="profileGender">⚧ Gender</label>
+                    <select id="profileGender">
+                        <option value="">-- Select --</option>
+                        <option value="female">Female</option>
+                        <option value="male">Male</option>
+                        <option value="nonbinary">Non-binary</option>
+                        <option value="other">Prefer not to say</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>🎯 Health Quest Goals</h2>
+            <div class="field-group"><label for="goalSleep">😴 Target Sleep (hours/night)</label><input type="number" id="goalSleep" placeholder="e.g. 8" min="1" max="24" step="0.5"></div>
+            <div class="field-group"><label for="goalWeight">⚖️ Target Weight (kg)</label><input type="number" id="goalWeight" placeholder="e.g. 65" min="10" max="500" step="0.1"></div>
+            <div class="field-group"><label for="goalSteps">🚶 Daily Step Goal</label><input type="number" id="goalSteps" placeholder="e.g. 10000" min="100" max="100000"></div>
+            <div class="field-group"><label for="goalNotes">📝 Personal Notes / Motivation</label><textarea id="goalNotes" rows="3" placeholder="Write a motivational message to yourself..."></textarea></div>
+        </div>
+
+        <div class="profile-section" id="goalsDisplay">
+            <h2>🏆 Active Quests</h2>
+            <div id="goalsList"></div>
+        </div>
+
+        <button class="btn-save" onclick="saveProfile()">💾 SAVE HERO PROFILE</button>
+
+        <div class="profile-section" style="border: 1px solid var(--danger);">
+            <h2 style="color: var(--danger);">⚠️ Danger Zone</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Warning! These actions cannot be undone. All your XP, quests, and achievements will be lost!</p>
+            <button class="btn-danger" onclick="resetAccount()">🗑️ Reset Entire Account (Delete All Data)</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>⚔️ Healthchievements © 2026 ⚔️</p>
+        <p style="margin-top: 8px;">
+            <a href="index.html">Home Base</a> •
+            <a href="log.html">Quest Log</a> •
+            <a href="dashboard.html">Dashboard</a>
+        </p>
+    </footer>
+
+    <!-- Page-specific JavaScript for profile management -->
+    <script>
+        var avatarOptions = ['⚔️', '🧙', '🧝', '🦸', '🧑‍🚀', '🐉', '🦊', '🎮', '👑', '🌟', '🛡️', '🏹'];
+        var selectedAvatar = '⚔️';
+
+        function buildAvatarPicker() {
+            var picker = document.getElementById('avatarPicker');
+            var html = '';
+            for (var i = 0; i < avatarOptions.length; i++) {
+                var emoji = avatarOptions[i];
+                var isSelected = emoji === selectedAvatar ? 'selected' : '';
+                html += '<div class="avatar-option ' + isSelected + '" onclick="selectAvatar(\'' + emoji + '\', this)">' + emoji + '</div>';
+            }
+            picker.innerHTML = html;
+        }
+
+        function selectAvatar(emoji, element) {
+            selectedAvatar = emoji;
+            document.querySelectorAll('.avatar-option').forEach(function(opt) { opt.classList.remove('selected'); });
+            element.classList.add('selected');
+            document.getElementById('displayAvatar').textContent = emoji;
+        }
+
+        function loadProfile() {
+            var profileData = localStorage.getItem('heroProfile');
+            var profile = profileData ? JSON.parse(profileData) : {};
+            var questData = localStorage.getItem('healthQuestLog');
+            var questLog = questData ? JSON.parse(questData) : [];
+            var totalXP = parseInt(localStorage.getItem('totalXP')) || 0;
+            var level = Math.floor(totalXP / 200) + 1;
+
+            if (profile.name) document.getElementById('profileName').value = profile.name;
+            if (profile.age) document.getElementById('profileAge').value = profile.age;
+            if (profile.gender) document.getElementById('profileGender').value = profile.gender;
+            if (profile.avatar) selectedAvatar = profile.avatar;
+            if (profile.goalSleep) document.getElementById('goalSleep').value = profile.goalSleep;
+            if (profile.goalWeight) document.getElementById('goalWeight').value = profile.goalWeight;
+            if (profile.goalSteps) document.getElementById('goalSteps').value = profile.goalSteps;
+            if (profile.goalNotes) document.getElementById('goalNotes').value = profile.goalNotes;
+
+            document.getElementById('displayName').textContent = profile.name || 'Adventurer';
+            document.getElementById('displayAvatar').textContent = selectedAvatar;
+            document.getElementById('displayXP').textContent = totalXP;
+            document.getElementById('displayQuests').textContent = questLog.length;
+            document.getElementById('displayLevel').textContent = level;
+
+            var titles = ['Novice Hero', 'Apprentice', 'Health Warrior', 'Wellness Knight', 'Vitality Master'];
+            var titleIndex = Math.min(level - 1, titles.length - 1);
+            document.getElementById('displayTitle').textContent = '⭐ Level ' + level + ' — ' + titles[titleIndex];
+
+            buildAvatarPicker();
+            updateGoalsDisplay(profile, questLog);
+        }
+
+        function updateGoalsDisplay(profile, questLog) {
+            var goalsList = document.getElementById('goalsList');
+            var html = '';
+            var latest = questLog.length > 0 ? questLog[questLog.length - 1] : null;
+
+            if (profile.goalSleep) {
+                var avgSleep = 0, count = 0;
+                for (var i = 0; i < questLog.length; i++) { if (questLog[i].sleepHours) { avgSleep += parseFloat(questLog[i].sleepHours); count++; } }
+                avgSleep = count > 0 ? (avgSleep / count).toFixed(1) : 0;
+                var sleepMet = avgSleep >= profile.goalSleep;
+                html += '<div class="goal-item"><span class="goal-text">😴 Sleep ' + profile.goalSleep + '+ hrs/night (Current avg: ' + avgSleep + ' hrs)</span><span class="goal-status ' + (sleepMet ? 'status-complete' : 'status-active') + '">' + (sleepMet ? '🏆 Complete!' : '🎯 In Progress') + '</span></div>';
+            }
+            if (profile.goalWeight && latest && latest.weight) {
+                var weightMet = Math.abs(parseFloat(latest.weight) - parseFloat(profile.goalWeight)) < 2;
+                html += '<div class="goal-item"><span class="goal-text">⚖️ Reach ' + profile.goalWeight + ' kg (Current: ' + latest.weight + ' kg)</span><span class="goal-status ' + (weightMet ? 'status-complete' : 'status-active') + '">' + (weightMet ? '🏆 Complete!' : '🎯 In Progress') + '</span></div>';
+            }
+            if (profile.goalSteps) {
+                html += '<div class="goal-item"><span class="goal-text">🚶 Walk ' + Number(profile.goalSteps).toLocaleString() + ' steps/day</span><span class="goal-status status-active">🎯 In Progress</span></div>';
+            }
+            html += '<div class="goal-item"><span class="goal-text">📝 Log 10 health quests (Current: ' + questLog.length + ')</span><span class="goal-status ' + (questLog.length >= 10 ? 'status-complete' : 'status-active') + '">' + (questLog.length >= 10 ? '🏆 Complete!' : '🎯 ' + questLog.length + '/10') + '</span></div>';
+
+            goalsList.innerHTML = html;
+        }
+
+        function saveProfile() {
+            var profile = {
+                name: document.getElementById('profileName').value.trim(),
+                age: document.getElementById('profileAge').value,
+                gender: document.getElementById('profileGender').value,
+                avatar: selectedAvatar,
+                goalSleep: document.getElementById('goalSleep').value,
+                goalWeight: document.getElementById('goalWeight').value,
+                goalSteps: document.getElementById('goalSteps').value,
+                goalNotes: document.getElementById('goalNotes').value,
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem('heroProfile', JSON.stringify(profile));
+
+            var notification = document.getElementById('saveNotification');
+            notification.classList.add('show');
+            setTimeout(function() { notification.classList.remove('show'); }, 3000);
+            loadProfile();
+        }
+
+        function resetAccount() {
+            if (confirm('⚠️ Are you SURE you want to delete ALL your data?')) {
+                if (confirm('⚠️ FINAL WARNING: This will permanently erase everything. Continue?')) {
+                    localStorage.removeItem('healthQuestLog');
+                    localStorage.removeItem('totalXP');
+                    localStorage.removeItem('heroProfile');
+                    location.reload();
+                }
+            }
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+</html>

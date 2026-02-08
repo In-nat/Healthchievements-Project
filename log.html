@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthchievements — Quest Log</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Health<span>chievements</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">🏠 Home Base</a></li>
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="log.html">📝 Quest Log</a></li>
+            <li><a href="history.html">📜 History</a></li>
+            <li><a href="tips.html">💡 Power-Ups</a></li>
+            <li><a href="profile.html">👤 Profile</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>📝 Quest Log — Record Your Stats</h1>
+        <p>Enter your health data to earn XP and track your progress, brave adventurer!</p>
+    </div>
+
+    <div class="form-container">
+        <form id="healthForm" onsubmit="return handleSubmit(event)">
+
+            <div class="quest-section">
+                <h2>🗓️ Quest Details</h2>
+                <div class="field-group">
+                    <label for="questDate">📅 Quest Date</label>
+                    <input type="date" id="questDate" required>
+                    <div class="error-message" id="error-date">Please select a valid date!</div>
+                </div>
+                <div class="field-group">
+                    <label for="playerName">🎮 Player Name</label>
+                    <input type="text" id="playerName" placeholder="Enter your hero name..." required>
+                    <div class="error-message" id="error-name">Your hero needs a name! (At least 2 characters)</div>
+                </div>
+            </div>
+
+            <div class="quest-section">
+                <h2>📏 Body Stats — Character Attributes</h2>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label for="height">📐 Height (cm)</label>
+                        <input type="number" id="height" placeholder="e.g. 170" min="50" max="300" step="0.1" oninput="calculateBMI()">
+                        <div class="error-message" id="error-height">Height must be between 50-300 cm!</div>
+                    </div>
+                    <div class="field-group">
+                        <label for="weight">⚖️ Weight (kg)</label>
+                        <input type="number" id="weight" placeholder="e.g. 65" min="10" max="500" step="0.1" oninput="calculateBMI()">
+                        <div class="error-message" id="error-weight">Weight must be between 10-500 kg!</div>
+                    </div>
+                </div>
+                <div class="bmi-display">
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">⚡ BMI (Auto-Calculated Power Level)</p>
+                    <span id="bmiValue">--</span>
+                    <p class="bmi-category" id="bmiCategory">Enter height & weight to see your power level</p>
+                </div>
+            </div>
+
+            <div class="quest-section">
+                <h2>❤️ Vital Signs — HP Stats</h2>
+                <div class="field-group">
+                    <label for="heartRate">💓 Heart Rate (bpm)</label>
+                    <input type="number" id="heartRate" placeholder="e.g. 72" min="30" max="250">
+                    <div class="error-message" id="error-hr">Heart rate should be between 30-250 bpm!</div>
+                </div>
+            </div>
+
+            <div class="quest-section">
+                <h2>😴 Rest Phase — Sleep Pattern</h2>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label for="sleepHours">🛌 Hours of Sleep</label>
+                        <input type="number" id="sleepHours" placeholder="e.g. 8" min="0" max="24" step="0.5">
+                        <div class="error-message" id="error-sleep">Sleep hours must be between 0-24!</div>
+                    </div>
+                    <div class="field-group">
+                        <label for="sleepQuality">⭐ Sleep Quality</label>
+                        <select id="sleepQuality">
+                            <option value="">-- Select Rating --</option>
+                            <option value="5">⭐⭐⭐⭐⭐ Legendary Rest</option>
+                            <option value="4">⭐⭐⭐⭐ Great Rest</option>
+                            <option value="3">⭐⭐⭐ Average Rest</option>
+                            <option value="2">⭐⭐ Poor Rest</option>
+                            <option value="1">⭐ Terrible Rest</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quest-section">
+                <h2>🌸 Cycle Tracking — Optional Side Quest</h2>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cycleToggle" onchange="toggleCycleFields()">
+                        <span class="slider"></span>
+                    </label>
+                    <span style="font-size: 14px; color: var(--text-muted);">Enable Menstrual Cycle Tracking</span>
+                </div>
+                <div class="menstrual-fields" id="menstrualFields">
+                    <div class="field-group">
+                        <label for="cycleStart">🗓️ Cycle Start Date</label>
+                        <input type="date" id="cycleStart">
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="cycleLength">📏 Cycle Length (days)</label>
+                            <input type="number" id="cycleLength" placeholder="e.g. 28" min="15" max="50">
+                        </div>
+                        <div class="field-group">
+                            <label for="cycleFlow">💧 Flow Intensity</label>
+                            <select id="cycleFlow">
+                                <option value="">-- Select --</option>
+                                <option value="light">Light</option>
+                                <option value="medium">Medium</option>
+                                <option value="heavy">Heavy</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="cycleNotes">📝 Notes / Symptoms</label>
+                        <textarea id="cycleNotes" rows="3" placeholder="Any symptoms, mood changes, etc..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">⚔️ SAVE QUEST LOG & EARN XP ⚔️</button>
+        </form>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="success-popup" id="successPopup">
+        <h2>🏆 Quest Complete!</h2>
+        <p>Your health stats have been saved. You earned <strong style="color: var(--accent);">+50 XP!</strong></p>
+        <button onclick="closePopup()">Continue Adventure →</button>
+    </div>
+
+    <footer>
+        <p>⚔️ Healthchievements © 2026 ⚔️</p>
+        <p style="margin-top: 8px;">
+            <a href="index.html">Home Base</a> •
+            <a href="dashboard.html">Dashboard</a> •
+            <a href="history.html">History</a>
+        </p>
+    </footer>
+
+    <!-- Page-specific JavaScript for form validation & data storage -->
+    <script>
+        // Set today's date as default
+        document.getElementById('questDate').value = new Date().toISOString().split('T')[0];
+
+        // Toggle menstrual cycle fields
+        function toggleCycleFields() {
+            var checkbox = document.getElementById('cycleToggle');
+            var fields = document.getElementById('menstrualFields');
+            if (checkbox.checked) { fields.classList.add('show'); }
+            else { fields.classList.remove('show'); }
+        }
+
+        // Auto-calculate BMI: weight(kg) / height(m)^2
+        function calculateBMI() {
+            var height = parseFloat(document.getElementById('height').value);
+            var weight = parseFloat(document.getElementById('weight').value);
+            var bmiDisplay = document.getElementById('bmiValue');
+            var bmiCategory = document.getElementById('bmiCategory');
+
+            if (height > 0 && weight > 0) {
+                var heightInMeters = height / 100;
+                var bmi = weight / (heightInMeters * heightInMeters);
+                bmi = Math.round(bmi * 10) / 10;
+                bmiDisplay.textContent = bmi;
+
+                if (bmi < 18.5) {
+                    bmiCategory.textContent = '🔵 Underweight — Need more potions!';
+                    bmiCategory.style.color = '#60a5fa';
+                } else if (bmi < 25) {
+                    bmiCategory.textContent = '🟢 Normal — Perfectly balanced, like a true hero!';
+                    bmiCategory.style.color = '#10b981';
+                } else if (bmi < 30) {
+                    bmiCategory.textContent = '🟡 Overweight — Time for a training montage!';
+                    bmiCategory.style.color = '#f59e0b';
+                } else {
+                    bmiCategory.textContent = '🔴 Obese — Let\'s start a new fitness quest!';
+                    bmiCategory.style.color = '#ef4444';
+                }
+            } else {
+                bmiDisplay.textContent = '--';
+                bmiCategory.textContent = 'Enter height & weight to see your power level';
+                bmiCategory.style.color = 'var(--text-muted)';
+            }
+        }
+
+        // Form validation
+        function validateForm() {
+            var isValid = true;
+            document.querySelectorAll('.error-message').forEach(function(el) { el.classList.remove('show'); });
+            document.querySelectorAll('.invalid').forEach(function(el) { el.classList.remove('invalid'); });
+
+            if (document.getElementById('playerName').value.trim().length < 2) { showError('playerName', 'error-name'); isValid = false; }
+            if (!document.getElementById('questDate').value) { showError('questDate', 'error-date'); isValid = false; }
+
+            var h = document.getElementById('height').value;
+            if (h && (h < 50 || h > 300)) { showError('height', 'error-height'); isValid = false; }
+            var w = document.getElementById('weight').value;
+            if (w && (w < 10 || w > 500)) { showError('weight', 'error-weight'); isValid = false; }
+            var hr = document.getElementById('heartRate').value;
+            if (hr && (hr < 30 || hr > 250)) { showError('heartRate', 'error-hr'); isValid = false; }
+            var sl = document.getElementById('sleepHours').value;
+            if (sl && (sl < 0 || sl > 24)) { showError('sleepHours', 'error-sleep'); isValid = false; }
+            return isValid;
+        }
+
+        function showError(inputId, errorId) {
+            document.getElementById(inputId).classList.add('invalid');
+            document.getElementById(errorId).classList.add('show');
+        }
+
+        // Handle form submit — validate, collect data, save to localStorage
+        function handleSubmit(event) {
+            event.preventDefault();
+            if (!validateForm()) { return false; }
+
+            var healthData = {
+                date: document.getElementById('questDate').value,
+                playerName: document.getElementById('playerName').value.trim(),
+                height: document.getElementById('height').value || null,
+                weight: document.getElementById('weight').value || null,
+                bmi: document.getElementById('bmiValue').textContent !== '--' ? document.getElementById('bmiValue').textContent : null,
+                heartRate: document.getElementById('heartRate').value || null,
+                sleepHours: document.getElementById('sleepHours').value || null,
+                sleepQuality: document.getElementById('sleepQuality').value || null,
+                cycleTracking: document.getElementById('cycleToggle').checked,
+                cycleStart: document.getElementById('cycleStart').value || null,
+                cycleLength: document.getElementById('cycleLength').value || null,
+                cycleFlow: document.getElementById('cycleFlow').value || null,
+                cycleNotes: document.getElementById('cycleNotes').value || null,
+                savedAt: new Date().toISOString(),
+                xpEarned: 50
+            };
+
+            var existingData = localStorage.getItem('healthQuestLog');
+            var questLog = existingData ? JSON.parse(existingData) : [];
+            questLog.push(healthData);
+            localStorage.setItem('healthQuestLog', JSON.stringify(questLog));
+
+            var currentXP = parseInt(localStorage.getItem('totalXP')) || 0;
+            currentXP += 50;
+            localStorage.setItem('totalXP', currentXP.toString());
+
+            document.getElementById('successPopup').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+            return false;
+        }
+
+        function closePopup() {
+            document.getElementById('successPopup').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('healthForm').reset();
+            document.getElementById('bmiValue').textContent = '--';
+            document.getElementById('bmiCategory').textContent = 'Enter height & weight to see your power level';
+            document.getElementById('menstrualFields').classList.remove('show');
+            document.getElementById('questDate').value = new Date().toISOString().split('T')[0];
+        }
+    </script>
+
+</body>
+</html>

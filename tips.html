@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthchievements — Power-Up Tips</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Health<span>chievements</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">🏠 Home Base</a></li>
+            <li><a href="dashboard.html">📊 Dashboard</a></li>
+            <li><a href="log.html">📝 Quest Log</a></li>
+            <li><a href="history.html">📜 History</a></li>
+            <li><a href="tips.html">💡 Power-Ups</a></li>
+            <li><a href="profile.html">👤 Profile</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-header">
+        <h1>💡 Power-Up Tips</h1>
+        <p>Personalised health boosts based on your quest data — level up smarter!</p>
+    </div>
+
+    <!-- This container will be filled by the health-tips.js script -->
+    <div class="tips-container" id="tipsContent"></div>
+
+    <footer>
+        <p>⚔️ Healthchievements © 2026 ⚔️</p>
+        <p style="margin-top: 8px;">
+            <a href="index.html">Home Base</a> •
+            <a href="log.html">Quest Log</a> •
+            <a href="dashboard.html">Dashboard</a>
+        </p>
+    </footer>
+
+    <!-- 
+        External JavaScript file for personalised health tips!
+        All the tip generation logic lives in this separate file.
+        This is the key separation — the "brain" of the tips page
+        is now in its own .js file that can be reused or edited independently.
+    -->
+    <script src="health-tips.js"></script>
+
+</body>
+</html>
